@@ -381,7 +381,6 @@ const MyBooking = () => {
       if (!token) throw new Error("No token found. Please login again.");
 
       if (specialistId) {
-        // Lấy lịch bận của specialist cụ thể
         const response = await axios.get(
           `https://a66f-2405-4802-811e-11a0-5c40-f238-ce80-2dce.ngrok-free.app/api/schedules/${specialistId}/busy`,
           {
@@ -417,7 +416,6 @@ const MyBooking = () => {
           throw new Error("Invalid response format: Expected an array");
         }
       } else {
-        // Lấy lịch bận của tất cả specialists
         const busyTimesMap = {};
         for (const specialist of specialists) {
           try {
@@ -458,7 +456,7 @@ const MyBooking = () => {
 
         console.log("All specialist busy times for date", date, ":", busyTimesMap);
         setAllSpecialistBusyTimes(busyTimesMap);
-        setSpecialistBusyTimes([]); // Reset lịch bận của specialist cụ thể
+        setSpecialistBusyTimes([]);
       }
     } catch (error) {
       console.error("Error fetching specialist busy times:", error);
@@ -1103,9 +1101,9 @@ const MyBooking = () => {
         const busyEndMinutes = timeToMinutes(busyRange.endTime);
 
         if (
-          (startMinutes >= busyStartMinutes && startMinutes < busyEndMinutes) ||
-          (endMinutes > busyStartMinutes && endMinutes <= busyEndMinutes) ||
-          (startMinutes <= busyStartMinutes && endMinutes >= busyEndMinutes)
+          (startMinutes > busyStartMinutes && startMinutes < busyEndMinutes) || // Bắt đầu trong khoảng bận (không bao gồm thời gian kết thúc)
+          (endMinutes > busyStartMinutes && endMinutes <= busyEndMinutes) || // Kết thúc trong khoảng bận
+          (startMinutes <= busyStartMinutes && endMinutes > busyStartMinutes) // Bao phủ hoặc bắt đầu trước và kết thúc sau khoảng bận
         ) {
           return {
             available: false,
@@ -1124,9 +1122,9 @@ const MyBooking = () => {
         const busyEndMinutes = timeToMinutes(busyRange.endTime);
 
         if (
-          (startMinutes >= busyStartMinutes && startMinutes < busyEndMinutes) ||
+          (startMinutes > busyStartMinutes && startMinutes < busyEndMinutes) ||
           (endMinutes > busyStartMinutes && endMinutes <= busyEndMinutes) ||
-          (startMinutes <= busyStartMinutes && endMinutes >= busyEndMinutes)
+          (startMinutes <= busyStartMinutes && endMinutes > busyStartMinutes)
         ) {
           return false;
         }
