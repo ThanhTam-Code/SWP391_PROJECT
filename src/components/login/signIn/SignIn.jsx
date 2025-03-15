@@ -29,7 +29,7 @@
 //     try {
 //       const response = await axios.get(
 
-//         `https://a66f-2405-4802-811e-11a0-5c40-f238-ce80-2dce.ngrok-free.app/login/oauth2/code/google?code=${code}`,
+//         `https://b865-2405-4802-811e-11a0-875-581e-b53-2910.ngrok-free.app/login/oauth2/code/google?code=${code}`,
 
 //         { headers: { "Content-Type": "application/json" } }
 //       );
@@ -96,7 +96,7 @@
 
 //       console.log("Request data:", { email, password });
 //       const response = await axios.post(
-//         "https://a66f-2405-4802-811e-11a0-5c40-f238-ce80-2dce.ngrok-free.app/auth/token",
+//         "https://b865-2405-4802-811e-11a0-875-581e-b53-2910.ngrok-free.app/auth/token",
 
 //         { email, password },
 
@@ -165,7 +165,7 @@
 //   const handleGoogleLogin = () => {
 
 //     window.location.href =
-//       "https://a66f-2405-4802-811e-11a0-5c40-f238-ce80-2dce.ngrok-free.app/oauth2/authorization/google";
+//       "https://b865-2405-4802-811e-11a0-875-581e-b53-2910.ngrok-free.app/oauth2/authorization/google";
 //   };
 
 //   return (
@@ -337,7 +337,7 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
 
   const BACKEND_URL =
-    "https://a66f-2405-4802-811e-11a0-5c40-f238-ce80-2dce.ngrok-free.app";
+    "https://b865-2405-4802-811e-11a0-875-581e-b53-2910.ngrok-free.app";
 
   useEffect(() => {
     console.log("Location search:", location.search); // Debug URL

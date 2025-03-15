@@ -2,11 +2,11 @@
 
 import { motion } from "framer-motion";
 import { Search, MoreHorizontal, XIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Edit } from "./Edit";
 
 const API_URL =
-  "https://a66f-2405-4802-811e-11a0-5c40-f238-ce80-2dce.ngrok-free.app/api/users";
+  "https://b865-2405-4802-811e-11a0-875-581e-b53-2910.ngrok-free.app/api/users";
 
 export function Customers() {
   const [clients, setClients] = useState([]);
@@ -18,9 +18,27 @@ export function Customers() {
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
 
+  const dropdownRef = useRef(null);
+
   useEffect(() => {
     fetchClients();
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        console.log("Closing dropdown due to click outside");
+        setDropdownOpen(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpen]);
 
   const fetchClients = async () => {
     setIsLoading(true);
@@ -78,10 +96,13 @@ export function Customers() {
   );
 
   const handleEditClient = (client) => {
+    console.log("Editing client:", client);
     setEditingClient(client);
+    setDropdownOpen(null);
   };
 
   const handleSaveEditedClient = (updatedClient) => {
+    console.log("Saving edited client:", updatedClient);
     setClients(
       clients.map((client) =>
         client.id === updatedClient.id ? updatedClient : client
@@ -96,7 +117,9 @@ export function Customers() {
   };
 
   const handleDeleteClient = (clientId) => {
+    console.log("Deleting client ID:", clientId);
     setClientToDelete(clientId);
+    setDropdownOpen(null);
   };
 
   const confirmDeleteClient = () => {
@@ -226,10 +249,7 @@ export function Customers() {
                     Name
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
-                    Phone
+                    Contact
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                     Address
@@ -243,7 +263,7 @@ export function Customers() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredClients.map((client) => (
+                {filteredClients.map((client, index) => (
                   <motion.tr
                     key={client.id}
                     initial={{ opacity: 0 }}
@@ -263,11 +283,13 @@ export function Customers() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {client.email}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {client.phone}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {client.email}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {client.phone}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {client.address}
@@ -276,19 +298,33 @@ export function Customers() {
                       {client.role}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="relative">
+                      <div className="relative" ref={dropdownRef}>
                         <button
-                          onClick={() =>
+                          onClick={() => {
+                            console.log(
+                              "Toggling dropdown for client:",
+                              client.id
+                            );
                             setDropdownOpen(
                               dropdownOpen === client.id ? null : client.id
-                            )
-                          }
-                          className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                            );
+                          }}
+                          className="text-gray-400 hover:text-gray-600 focus:outline-none p-1 rounded-full hover:bg-gray-200 transition-colors duration-200"
                         >
                           <MoreHorizontal className="h-5 w-5" />
                         </button>
                         {dropdownOpen === client.id && (
-                          <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.1 }}
+                            className={`absolute right-0 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 overflow-hidden ${
+                              index === filteredClients.length - 1
+                                ? "bottom-full mb-2"
+                                : "top-full mt-2"
+                            }`}
+                          >
                             <div className="py-1" role="menu">
                               <button
                                 onClick={() => handleEditClient(client)}
@@ -305,7 +341,7 @@ export function Customers() {
                                 Delete Client
                               </button>
                             </div>
-                          </div>
+                          </motion.div>
                         )}
                       </div>
                     </td>
@@ -351,12 +387,14 @@ export function Customers() {
         )}
 
         {/* Edit Modal */}
-        <Edit
-          isOpen={!!editingClient}
-          onClose={() => setEditingClient(null)}
-          client={editingClient}
-          onSave={handleSaveEditedClient}
-        />
+        {editingClient && (
+          <Edit
+            isOpen={!!editingClient}
+            onClose={() => setEditingClient(null)}
+            client={editingClient}
+            onSave={handleSaveEditedClient}
+          />
+        )}
 
         {/* Delete Confirmation Modal */}
         {clientToDelete && (

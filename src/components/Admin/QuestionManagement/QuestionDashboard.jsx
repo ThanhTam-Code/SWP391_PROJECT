@@ -1,61 +1,59 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import EditQuestionForm from "./EditQuestion";
 
-// Mock data for skin classification questions
-const initialQuestions = [
-  {
-    id: "290719925474099",
-    question: "Does your skin tend to get oily by the end of the day?",
-    skinType: "OILY",
-    options: ["Yes, a lot", "Yes, a little", "No, my skin is dry", "Not sure"],
-  },
-  {
-    id: "290719925474100",
-    question: "Do you frequently get acne?",
-    skinType: "OILY",
-    options: ["Yes, frequently", "Occasionally", "Rarely", "Never"],
-  },
-  {
-    id: "290719925474101",
-    question: "Is your skin sensitive to sunlight?",
-    skinType: "SENSITIVE",
-    options: [
-      "Very sensitive",
-      "Slightly sensitive",
-      "Not sensitive",
-      "Not sure",
-    ],
-  },
-  {
-    id: "290719925474102",
-    question: "Does your skin get red after using new products?",
-    skinType: "SENSITIVE",
-    options: ["Frequently", "Sometimes", "Rarely", "Never"],
-  },
-  {
-    id: "290719925474103",
-    question: "What is the size of your pores?",
-    skinType: "DRY",
-    options: ["Large and visible", "Medium", "Small, hard to see", "Not sure"],
-  },
-];
+const BACKEND_URL =
+  "https://b865-2405-4802-811e-11a0-875-581e-b53-2910.ngrok-free.app";
 
 export default function QuestionDashboard() {
-  const [questions, setQuestions] = useState(initialQuestions);
+  const [questions, setQuestions] = useState([]);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false); // New state for add modal
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // State for the new question form
   const [newQuestion, setNewQuestion] = useState({
-    id: "",
-    question: "",
+    questionText: "",
     skinType: "",
-    options: ["", "", "", ""], // Initialize with 4 empty options
+    answers: [
+      { answerText: "", score: 0 },
+      { answerText: "", score: 0 },
+      { answerText: "", score: 0 },
+      { answerText: "", score: 0 },
+    ],
   });
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
+  const fetchQuestions = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${BACKEND_URL}/api/quiz/questions`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
+      const transformedQuestions = response.data.map((q) => ({
+        id: q.id,
+        question: q.questionText,
+        skinType: q.skinType,
+        options: q.answers.map((a) => a.answerText),
+      }));
+      setQuestions(transformedQuestions);
+    } catch (err) {
+      setError("Failed to fetch questions: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleDelete = (id) => {
     setQuestionToDelete(id);
@@ -63,11 +61,25 @@ export default function QuestionDashboard() {
     setDropdownOpen(null);
   };
 
-  const confirmDelete = () => {
-    if (questionToDelete) {
+  const confirmDelete = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `${BACKEND_URL}/api/quiz/questions/${questionToDelete}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setQuestions(questions.filter((q) => q.id !== questionToDelete));
       setIsDeleteDialogOpen(false);
       setQuestionToDelete(null);
+    } catch (err) {
+      setError("Failed to delete question: " + err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -77,54 +89,123 @@ export default function QuestionDashboard() {
     setDropdownOpen(null);
   };
 
-  const saveEditedQuestion = (editedQuestion) => {
-    setQuestions(
-      questions.map((q) => (q.id === editedQuestion.id ? editedQuestion : q))
-    );
-    setIsEditDialogOpen(false);
-    setEditingQuestion(null);
+  const saveEditedQuestion = async (editedQuestion) => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const requestBody = {
+        questionText: editedQuestion.question,
+        skinType: editedQuestion.skinType,
+        answers: editedQuestion.options.map((opt, index) => ({
+          answerText: opt,
+          score: index,
+        })),
+      };
+      const response = await axios.put(
+        `${BACKEND_URL}/api/quiz/questions/${editedQuestion.id}`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const updatedQuestion = {
+        id: response.data.id,
+        question: response.data.questionText,
+        skinType: response.data.skinType,
+        options: response.data.answers.map((a) => a.answerText),
+      };
+      setQuestions(
+        questions.map((q) => (q.id === editedQuestion.id ? updatedQuestion : q))
+      );
+      setIsEditDialogOpen(false);
+      setEditingQuestion(null);
+    } catch (err) {
+      setError("Failed to update question: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddQuestion = async () => {
+    if (
+      newQuestion.questionText &&
+      newQuestion.skinType &&
+      newQuestion.answers.every((ans) => ans.answerText.trim() !== "")
+    ) {
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const requestBody = {
+          questionText: newQuestion.questionText,
+          skinType: newQuestion.skinType,
+          answers: newQuestion.answers,
+        };
+        const response = await axios.post(
+          `${BACKEND_URL}/api/quiz/questions`,
+          requestBody,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const addedQuestion = {
+          id: response.data.id,
+          question: response.data.questionText,
+          skinType: response.data.skinType,
+          options: response.data.answers.map((a) => a.answerText),
+        };
+        setQuestions([...questions, addedQuestion]);
+        setIsAddDialogOpen(false);
+        setNewQuestion({
+          questionText: "",
+          skinType: "",
+          answers: [
+            { answerText: "", score: 0 },
+            { answerText: "", score: 0 },
+            { answerText: "", score: 0 },
+            { answerText: "", score: 0 },
+          ],
+        });
+      } catch (err) {
+        setError("Failed to add question: " + err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setError("Please fill in all fields!");
+    }
   };
 
   const toggleDropdown = (id) => {
     setDropdownOpen(dropdownOpen === id ? null : id);
   };
 
-  const handleAddQuestion = () => {
-    if (
-      newQuestion.id &&
-      newQuestion.question &&
-      newQuestion.skinType &&
-      newQuestion.options.every((opt) => opt.trim() !== "")
-    ) {
-      setQuestions([...questions, newQuestion]);
-      setIsAddDialogOpen(false);
-      // Reset the form after adding
-      setNewQuestion({
-        id: "",
-        question: "",
-        skinType: "",
-        options: ["", "", "", ""],
-      });
-    } else {
-      alert("Please fill in all fields!");
-    }
-  };
-
-  const handleOptionChange = (index, value) => {
-    const updatedOptions = [...newQuestion.options];
-    updatedOptions[index] = value;
-    setNewQuestion({ ...newQuestion, options: updatedOptions });
+  const handleOptionChange = (index, field, value) => {
+    const updatedAnswers = [...newQuestion.answers];
+    updatedAnswers[index] = { ...updatedAnswers[index], [field]: value };
+    setNewQuestion({ ...newQuestion, answers: updatedAnswers });
   };
 
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+        {isLoading && <div className="text-center">Loading...</div>}
         <div className="space-y-4">
-          {/* Add Question Button */}
           <div className="flex justify-end">
             <button
               className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 flex items-center"
               onClick={() => setIsAddDialogOpen(true)}
+              disabled={isLoading}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -144,40 +225,25 @@ export default function QuestionDashboard() {
             </button>
           </div>
 
-          {/* Question List (always visible) */}
           <div className="space-y-4">
             <div className="rounded-md border">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       ID
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Question
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    {/* Ẩn cột Skin Type */}
+                    {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Skin Type
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    </th> */}
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Number of Options
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -186,7 +252,7 @@ export default function QuestionDashboard() {
                   {questions.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={5}
+                        colSpan={4}
                         className="px-6 py-4 text-center text-sm text-gray-500"
                       >
                         No questions found.
@@ -201,9 +267,10 @@ export default function QuestionDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-[300px] truncate">
                           {question.question}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {/* Ẩn cột Skin Type */}
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {question.skinType}
-                        </td>
+                        </td> */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {question.options.length}
                         </td>
@@ -273,29 +340,15 @@ export default function QuestionDashboard() {
                 <div className="px-6 py-4 space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
-                      ID
-                    </label>
-                    <input
-                      type="text"
-                      value={newQuestion.id}
-                      onChange={(e) =>
-                        setNewQuestion({ ...newQuestion, id: e.target.value })
-                      }
-                      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      placeholder="Enter question ID"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
                       Question
                     </label>
                     <input
                       type="text"
-                      value={newQuestion.question}
+                      value={newQuestion.questionText}
                       onChange={(e) =>
                         setNewQuestion({
                           ...newQuestion,
-                          question: e.target.value,
+                          questionText: e.target.value,
                         })
                       }
                       className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -318,25 +371,45 @@ export default function QuestionDashboard() {
                     >
                       <option value="">Select skin type</option>
                       <option value="OILY">Oily</option>
-                      <option value="SENSITIVE">Sensitive</option>
                       <option value="DRY">Dry</option>
+                      <option value="SENSITIVE">Sensitive</option>
+                      <option value="COMBINATION">Combination</option>
+                      <option value="NORMAL">Normal</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
-                      Options
+                      Answers
                     </label>
-                    {newQuestion.options.map((option, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        value={option}
-                        onChange={(e) =>
-                          handleOptionChange(index, e.target.value)
-                        }
-                        className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        placeholder={`Option ${index + 1}`}
-                      />
+                    {newQuestion.answers.map((answer, index) => (
+                      <div key={index} className="flex gap-2 mt-1">
+                        <input
+                          type="text"
+                          value={answer.answerText}
+                          onChange={(e) =>
+                            handleOptionChange(
+                              index,
+                              "answerText",
+                              e.target.value
+                            )
+                          }
+                          className="w-3/4 rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          placeholder={`Answer ${index + 1}`}
+                        />
+                        <input
+                          type="number"
+                          value={answer.score}
+                          onChange={(e) =>
+                            handleOptionChange(
+                              index,
+                              "score",
+                              parseInt(e.target.value)
+                            )
+                          }
+                          className="w-1/4 rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          placeholder="Score"
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -350,8 +423,9 @@ export default function QuestionDashboard() {
                   <button
                     className="px-4 py-2 bg-blue-600 rounded-md text-sm font-medium text-white hover:bg-blue-700"
                     onClick={handleAddQuestion}
+                    disabled={isLoading}
                   >
-                    Add
+                    {isLoading ? "Adding..." : "Add"}
                   </button>
                 </div>
               </div>
@@ -400,8 +474,9 @@ export default function QuestionDashboard() {
                   <button
                     className="px-4 py-2 bg-red-600 rounded-md text-sm font-medium text-white hover:bg-red-700"
                     onClick={confirmDelete}
+                    disabled={isLoading}
                   >
-                    Delete
+                    {isLoading ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </div>
