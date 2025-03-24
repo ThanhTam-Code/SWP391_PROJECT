@@ -52,6 +52,7 @@ export default function AddQuestionForm({ onSuccess, onCancel }) {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
         }
       );
