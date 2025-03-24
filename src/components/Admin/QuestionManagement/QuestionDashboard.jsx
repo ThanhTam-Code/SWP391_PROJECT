@@ -142,6 +142,7 @@ export default function QuestionDashboard() {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
         }
       );
@@ -192,6 +193,7 @@ export default function QuestionDashboard() {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true",
             },
           }
         );
