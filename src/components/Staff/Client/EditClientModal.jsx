@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 
 const API_URL =
-  "https://f084-118-69-182-149.ngrok-free.app/api/users";
+  "https://beautya-gr2-production.up.railway.app/api/users";
 
 export function EditClientModal({ isOpen, onClose, client, onSave }) {
   const [formData, setFormData] = useState(null);

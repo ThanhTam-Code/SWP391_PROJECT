@@ -4,7 +4,7 @@ import EditServiceModal from "./EditService";
 import axios from "axios";
 
 const BASE_URL =
-  "https://f084-118-69-182-149.ngrok-free.app/api/services";
+  "https://beautya-gr2-production.up.railway.app/api/services";
 
 const ServiceRow = ({ service, onEditService, onDeleteService }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

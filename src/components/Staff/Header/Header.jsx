@@ -48,7 +48,7 @@ export function Header() {
       try {
         console.log("Fetching user profile with token:", token);
         const response = await axios.get(
-          "https://f084-118-69-182-149.ngrok-free.app/api/users/profile",
+          "https://beautya-gr2-production.up.railway.app/api/users/profile",
           {
             headers: {
               Authorization: `Bearer ${token}`,

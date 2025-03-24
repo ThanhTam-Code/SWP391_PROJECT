@@ -51,7 +51,7 @@ export default function Newsletter() {
 
     try {
       const response = await axios.post(
-        "https://f084-118-69-182-149.ngrok-free.app/api/contact",
+        "https://beautya-gr2-production.up.railway.app/api/contact",
         formData,
         { headers: { "ngrok-skip-browser-warning": "true" } }
       );

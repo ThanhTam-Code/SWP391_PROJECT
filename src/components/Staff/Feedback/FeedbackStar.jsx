@@ -28,7 +28,7 @@ export default function FeedbackStar() {
         };
 
         const response = await axios.get(
-          "https://f084-118-69-182-149.ngrok-free.app/api/feedbacks",
+          "https://beautya-gr2-production.up.railway.app/api/feedbacks",
           {
             headers,
           }

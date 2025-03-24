@@ -6,7 +6,7 @@ import { MoreHorizontal, XIcon } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import EditQuestionForm from "./EditQuestion";
 
-const BACKEND_URL = "https://f084-118-69-182-149.ngrok-free.app";
+const BACKEND_URL = "https://beautya-gr2-production.up.railway.app";
 
 export default function QuestionDashboard() {
   const [questions, setQuestions] = useState([]);

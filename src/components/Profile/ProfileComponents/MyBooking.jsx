@@ -27,6 +27,7 @@ import {
   CreditCardIcon,
   ChevronRight,
   MessageSquare,
+  Trash2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import CalendarMyBooking from "../../Profile/ProfileComponents/MybookingComponents/CalendarMyBooking"; // Adjust the import path as needed
@@ -145,6 +146,8 @@ const MyBooking = () => {
       }
     }
 
+    
+
     const fetchBookings = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -153,7 +156,7 @@ const MyBooking = () => {
         // Lấy danh sách bookings
         console.log("Fetching bookings from /api/bookings/user...");
         const bookingsResponse = await axios.get(
-          "https://f084-118-69-182-149.ngrok-free.app/api/bookings/user",
+          "https://beautya-gr2-production.up.railway.app/api/bookings/user",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -182,7 +185,7 @@ const MyBooking = () => {
         // Lấy toàn bộ feedback trong một lần gọi
         console.log("Fetching feedbacks from /api/feedbacks...");
         const feedbackResponse = await axios.get(
-          "https://f084-118-69-182-149.ngrok-free.app/api/feedbacks",
+          "https://beautya-gr2-production.up.railway.app/api/feedbacks",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -280,7 +283,7 @@ const MyBooking = () => {
         if (!token) throw new Error("No token found. Please login again.");
 
         const response = await axios.get(
-          "https://f084-118-69-182-149.ngrok-free.app/api/users/specialists/active",
+          "https://beautya-gr2-production.up.railway.app/api/users/specialists/active",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -383,7 +386,7 @@ const MyBooking = () => {
 
       if (specialistId) {
         const response = await axios.get(
-          `https://f084-118-69-182-149.ngrok-free.app/api/schedules/${specialistId}/busy`,
+          `https://beautya-gr2-production.up.railway.app/api/schedules/${specialistId}/busy`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -431,7 +434,7 @@ const MyBooking = () => {
         for (const specialist of specialists) {
           try {
             const response = await axios.get(
-              `https://f084-118-69-182-149.ngrok-free.app/api/schedules/${specialist.userId}/busy`,
+              `https://beautya-gr2-production.up.railway.app/api/schedules/${specialist.userId}/busy`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -551,7 +554,7 @@ const MyBooking = () => {
       console.log("isCancelling updated to true for bookingId:", bookingId);
 
       const response = await axios.post(
-        `https://f084-118-69-182-149.ngrok-free.app/api/bookings/${bookingId}/cancel`,
+        `https://beautya-gr2-production.up.railway.app/api/bookings/${bookingId}/cancel`,
         {},
         {
           headers: {
@@ -644,7 +647,7 @@ const MyBooking = () => {
 
     try {
       const response = await axios.post(
-        "https://f084-118-69-182-149.ngrok-free.app/api/bookings",
+        "https://beautya-gr2-production.up.railway.app/api/bookings",
         bookingData,
         {
           headers: {
@@ -759,7 +762,7 @@ const MyBooking = () => {
       }
 
       const response = await axios.get(
-        `https://f084-118-69-182-149.ngrok-free.app/api/bookings/${bookingId}`,
+        `https://beautya-gr2-production.up.railway.app/api/bookings/${bookingId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -836,7 +839,7 @@ const MyBooking = () => {
       if (!feedbackResponseData) {
         try {
           const feedbackResponse = await axios.get(
-            `https://f084-118-69-182-149.ngrok-free.app/api/feedbacks/booking/${bookingId}`,
+            `https://beautya-gr2-production.up.railway.app/api/feedbacks/booking/${bookingId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -942,7 +945,7 @@ const MyBooking = () => {
       console.log("Payment data to be sent:", paymentData);
 
       const response = await axios.post(
-        "https://f084-118-69-182-149.ngrok-free.app/api/v1/vnpay/create-payment",
+        "https://beautya-gr2-production.up.railway.app/api/v1/vnpay/create-payment",
         paymentData,
         {
           headers: {
@@ -1011,7 +1014,7 @@ const MyBooking = () => {
       };
 
       const response = await axios.post(
-        "https://f084-118-69-182-149.ngrok-free.app/api/feedbacks",
+        "https://beautya-gr2-production.up.railway.app/api/feedbacks",
         feedbackData,
         {
           headers: {
@@ -1101,6 +1104,23 @@ const MyBooking = () => {
     } finally {
       setIsSubmittingFeedback(false);
     }
+  };
+  // Hàm xóa một dịch vụ
+  const handleRemoveService = (serviceId) => {
+    const updatedServices = selectedServices.filter(
+      (service) => service.serviceId !== serviceId
+    );
+    setSelectedServices(updatedServices);
+    localStorage.setItem(
+      "selectedServicesForBooking",
+      JSON.stringify(updatedServices)
+    );
+  };
+
+  // Hàm xóa tất cả dịch vụ
+  const handleClearAllServices = () => {
+    setSelectedServices([]);
+    localStorage.removeItem("selectedServicesForBooking");
   };
 
   // Hàm chuyển thời gian dạng "HH:mm" thành phút
@@ -1497,11 +1517,23 @@ const MyBooking = () => {
               exit="exit"
             >
               <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-                <div className="flex items-center mb-4">
-                  <Package className="w-5 h-5 text-rose-600 mr-2" />
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Selected Services
-                  </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <Package className="w-5 h-5 text-rose-600 mr-2" />
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      Selected Services
+                    </h2>
+                  </div>
+                  {/* Nút Clear All */}
+                  <motion.button
+                    onClick={handleClearAllServices}
+                    className="flex items-center px-3 py-1 bg-rose-100 text-rose-700 rounded-lg hover:bg-rose-200 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Clear All
+                  </motion.button>
                 </div>
                 <motion.div
                   className="bg-rose-50 rounded-lg p-4 mb-4"
@@ -1510,27 +1542,43 @@ const MyBooking = () => {
                   transition={{ delay: 0.2 }}
                 >
                   <ul className="divide-y divide-rose-100">
-                    {selectedServices.map((service, idx) => (
-                      <motion.li
-                        key={service.serviceId}
-                        className="py-3 flex justify-between"
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 + idx * 0.1 }}
-                      >
-                        <div>
-                          <p className="font-medium text-gray-800">
-                            {service.name}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {service.duration} minutes
-                          </p>
-                        </div>
-                        <p className="font-semibold text-rose-600">
-                          {formatVND(service.price)}
-                        </p>
-                      </motion.li>
-                    ))}
+                    <AnimatePresence>
+                      {selectedServices.map((service, idx) => (
+                        <motion.li
+                          key={service.serviceId}
+                          className="py-3 flex justify-between items-center"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div>
+                            <p className="font-medium text-gray-800">
+                              {service.name}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {service.duration} minutes
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <p className="font-semibold text-rose-600">
+                              {formatVND(service.price)}
+                            </p>
+                            {/* Nút xóa từng dịch vụ */}
+                            <motion.button
+                              onClick={() =>
+                                handleRemoveService(service.serviceId)
+                              }
+                              className="text-gray-500 hover:text-rose-600"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <X className="w-5 h-5" />
+                            </motion.button>
+                          </div>
+                        </motion.li>
+                      ))}
+                    </AnimatePresence>
                   </ul>
                   <div className="mt-3 pt-3 border-t border-rose-100 flex justify-between">
                     <p className="font-medium text-gray-800">Total</p>
@@ -1545,6 +1593,7 @@ const MyBooking = () => {
                   </div>
                 </motion.div>
 
+                {/* Phần còn lại của form chọn ngày, chuyên gia, giờ... giữ nguyên */}
                 <div className="space-y-4 mb-4">
                   {/* Row 1: Booking Date and Start Time */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -2458,4 +2507,3 @@ const MyBooking = () => {
 };
 
 export default MyBooking;
-

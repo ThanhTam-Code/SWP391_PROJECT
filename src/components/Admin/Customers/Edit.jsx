@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { X } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 
-const API_URL = "https://f084-118-69-182-149.ngrok-free.app/api/users";
+const API_URL = "https://beautya-gr2-production.up.railway.app/api/users";
 
 export function Edit({ isOpen, onClose, client, onSave }) {
   const [formData, setFormData] = useState(null);
