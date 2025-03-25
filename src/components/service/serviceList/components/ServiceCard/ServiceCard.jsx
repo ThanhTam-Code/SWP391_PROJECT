@@ -1,11 +1,9 @@
-"use client"
-
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import PropTypes from "prop-types"
 import { useState, useRef } from "react"
 import { addItem } from "../../../../../store/cartSlice"
-import { Heart, Clock, ChevronRight, Tag } from "lucide-react" // Loại bỏ DollarSign
+import { Heart, Clock, ChevronRight, Tag } from "lucide-react"
 import { motion } from "framer-motion"
 
 // Hàm định dạng giá tiền VND với dấu phân cách hàng nghìn
@@ -64,11 +62,12 @@ export default function ServiceCard({ service, onSelect, isSelected, onAddToWish
 
   return (
     <motion.div
-      className="w-full max-w-sm mx-auto mb-8"
+      className="w-full max-w-lg mx-auto mb-8" // Tăng từ max-w-md lên max-w-lg
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       ref={cardRef}
+      style={{ width: "min(100%, 32rem)" }} // Tăng từ 28rem lên 32rem
     >
       <motion.div
         className={`bg-white rounded-xl shadow-lg border overflow-hidden ${
@@ -88,8 +87,9 @@ export default function ServiceCard({ service, onSelect, isSelected, onAddToWish
             <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.5 }} className="h-full">
               <img
                 src={serviceImage || "/placeholder.svg"}
-                className="w-full h-[220px] object-cover"
+                className="w-full h-[320px] object-cover" // Tăng từ h-[280px] lên h-[320px]
                 alt={service.name}
+                style={{ height: "auto", maxHeight: "320px" }} // Linh hoạt chiều cao
               />
             </motion.div>
 
@@ -191,4 +191,3 @@ ServiceCard.propTypes = {
   isInWishlist: PropTypes.bool.isRequired,
   variant: PropTypes.string,
 }
-

@@ -13,7 +13,7 @@ export default function Testimonials() {
 
   const fetchTestimonials = async () => {
     try {
-      const response = await axios.get("https://beautya-gr2-production.up.railway.app/api/feedbacks", {
+      const response = await axios.get("https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/feedbacks", {
         headers: {
           "ngrok-skip-browser-warning": "true",
         },
@@ -120,7 +120,7 @@ export default function Testimonials() {
       <section className="py-16 md:py-24 w-full bg-pink-50">
         <div className="max-w-[1920px] mx-auto px-4 md:px-8 text-center">
           <p className="text-red-500">{error}</p>
-          <p className="text-gray-600 mt-2">Current URL: https://beautya-gr2-production.up.railway.app/api/feedbacks</p>
+          <p className="text-gray-600 mt-2">Current URL: https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/feedbacks</p>
           <button onClick={fetchTestimonials} className="mt-4 text-blue-500 hover:underline">
             Try Again
           </button>

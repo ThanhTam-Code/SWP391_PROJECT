@@ -32,7 +32,7 @@ export function BookingDetails({ bookingId, onStatusUpdate }) {
 
         // Fetch the list of services
         const servicesResponse = await axios.get(
-          `https://beautya-gr2-production.up.railway.app/api/services`,
+          `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/services`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ export function BookingDetails({ bookingId, onStatusUpdate }) {
 
         // Fetch the booking details
         const bookingResponse = await axios.get(
-          `https://beautya-gr2-production.up.railway.app/api/bookings/${bookingId}`,
+          `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/bookings/${bookingId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ export function BookingDetails({ bookingId, onStatusUpdate }) {
 
         // Fetch the list of specialists
         const specialistsResponse = await axios.get(
-          `https://beautya-gr2-production.up.railway.app/api/users/specialists/active`,
+          `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/users/specialists/active`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -143,7 +143,7 @@ export function BookingDetails({ bookingId, onStatusUpdate }) {
 
       const response = await axios({
         method: "POST",
-        url: `https://beautya-gr2-production.up.railway.app${endpoint}`,
+        url: `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app${endpoint}`,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -192,7 +192,7 @@ export function BookingDetails({ bookingId, onStatusUpdate }) {
       };
 
       const response = await axios.put(
-        `https://beautya-gr2-production.up.railway.app/api/bookings/${bookingId}`,
+        `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/bookings/${bookingId}`,
         requestBody,
         {
           headers: {

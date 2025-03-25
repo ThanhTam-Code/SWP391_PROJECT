@@ -1,4 +1,3 @@
-//fake
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
@@ -113,8 +112,34 @@ const ServiceList = () => {
   const [durationRange, setDurationRange] = useState([0, 240])
   const [sortOption, setSortOption] = useState("recommended")
   const [showBookingPanel, setShowBookingPanel] = useState(false)
+  const [columns, setColumns] = useState(3) // Default to 3 columns (desktop)
 
   const isLoggedIn = useCallback(() => !!localStorage.getItem("token"), [])
+
+  // Determine the number of columns based on screen size
+  useEffect(() => {
+    const updateColumns = () => {
+      if (window.innerWidth < 640) {
+        setColumns(1); // Mobile: 1 cột
+      } else if (window.innerWidth < 768) {
+        setColumns(2); // Tablet: 2 cột
+      } else {
+        // Desktop: 4 cột nếu panel đóng, 3 cột nếu panel mở
+        setColumns(showBookingPanel ? 3 : 4);
+      }
+    };
+  
+    updateColumns(); // Gọi lần đầu
+    window.addEventListener("resize", updateColumns); // Cập nhật khi resize
+  
+    return () => window.removeEventListener("resize", updateColumns); // Dọn dẹp
+  }, [showBookingPanel]);
+
+  const getServicesToDisplay = (services) => {
+    const rows = showBookingPanel ? 3 : 4; // 3 hàng khi panel mở, 4 hàng khi đóng
+    const servicesPerPage = columns * rows; // Tổng số dịch vụ hiển thị
+    return services.slice(0, servicesPerPage); // Cắt mảng để giới hạn số dịch vụ
+  };
 
   const redirectToLogin = () => {
     if (redirectAction === "detail" && serviceForDetail) {
@@ -170,20 +195,22 @@ const ServiceList = () => {
 
   const handleRemoveService = (serviceId) => {
     setSelectedServices((prev) => {
-      const updatedServices = prev.filter((s) => s.serviceId !== serviceId)
+      const updatedServices = prev.filter((s) => s.serviceId !== serviceId);
       if (updatedServices.length === 0) {
-        localStorage.removeItem("selectedServicesForBooking")
+        localStorage.removeItem("selectedServicesForBooking");
+        setShowBookingPanel(false); // Đóng panel nếu không còn dịch vụ nào
       } else {
-        localStorage.setItem("selectedServicesForBooking", JSON.stringify(updatedServices))
+        localStorage.setItem("selectedServicesForBooking", JSON.stringify(updatedServices));
       }
-      return updatedServices
-    })
-  }
-
+      return updatedServices;
+    });
+  };
+  
   const handleClearAllServices = () => {
-    setSelectedServices([])
-    localStorage.removeItem("selectedServicesForBooking")
-  }
+    setSelectedServices([]);
+    localStorage.removeItem("selectedServicesForBooking");
+    setShowBookingPanel(false); // Đóng panel khi xóa tất cả dịch vụ
+  };
 
   const handleViewDetails = (service) => {
     if (!isLoggedIn()) {
@@ -317,7 +344,7 @@ const ServiceList = () => {
         const token = localStorage.getItem("token")
         if (!token) throw new Error("Please login before doing quiz !.")
 
-        const response = await axios.get("https://beautya-gr2-production.up.railway.app/api/quiz/recommended-services", {
+        const response = await axios.get("https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/quiz/recommended-services", {
           headers: {
             Authorization: `Bearer ${token}`,
             "ngrok-skip-browser-warning": "true",
@@ -344,7 +371,7 @@ const ServiceList = () => {
             setError(error.response.data.message || "Failed to load recommended services.")
           }
         } else if (error.request) {
-          setError("Unable to connect to server. Please try again.")
+          setError("Please login before take a quiz !")
         } else {
           setError(error.message || "Failed to load recommended services. Please try again.")
         }
@@ -353,7 +380,7 @@ const ServiceList = () => {
 
     const fetchAllServices = async () => {
       try {
-        const response = await axios.get("https://beautya-gr2-production.up.railway.app/api/services", {
+        const response = await axios.get("https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/services", {
           headers: {
             "ngrok-skip-browser-warning": "true",
           },
@@ -396,7 +423,7 @@ const ServiceList = () => {
         const token = localStorage.getItem("token")
         if (!token) throw new Error("No token found. Please login again.")
 
-        const response = await axios.get("https://beautya-gr2-production.up.railway.app/api/quiz/recommended-services", {
+        const response = await axios.get("https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/quiz/recommended-services", {
           headers: {
             Authorization: `Bearer ${token}`,
             "ngrok-skip-browser-warning": "true",
@@ -434,19 +461,19 @@ const ServiceList = () => {
   }, [skinTypeResult, navigate, hasFetched])
 
   useEffect(() => {
-    const storedServices = localStorage.getItem("selectedServicesForBooking")
+    const storedServices = localStorage.getItem("selectedServicesForBooking");
     if (storedServices) {
       try {
-        const parsedServices = JSON.parse(storedServices)
+        const parsedServices = JSON.parse(storedServices);
         if (Array.isArray(parsedServices) && parsedServices.length > 0) {
-          setSelectedServices(parsedServices)
-          setShowBookingPanel(true)
+          setSelectedServices(parsedServices);
+          setShowBookingPanel(true); // Mở panel nếu có dịch vụ được chọn
         }
       } catch (error) {
-        console.error("Error parsing stored services:", error)
+        console.error("Error parsing stored services:", error);
       }
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     const redirectInfo = localStorage.getItem("redirectAfterLogin")
@@ -481,8 +508,10 @@ const ServiceList = () => {
   }
 
   const toggleBookingPanel = () => {
-    setShowBookingPanel(!showBookingPanel)
-  }
+    setShowBookingPanel(false); // Đóng panel
+    setSelectedServices([]); // Xóa tất cả dịch vụ đã chọn
+    localStorage.removeItem("selectedServicesForBooking"); // Xóa dữ liệu trong localStorage
+  };
 
   if (loading) {
     return (
@@ -660,7 +689,7 @@ const ServiceList = () => {
                       className="w-full accent-[#A10550]"
                     />
                     <span className="text-sm text-gray-700 whitespace-nowrap">
-                      {durationRange[0]} - {durationRange[1]} min
+                      {durationRange[0]} - ${durationRange[1]} min
                     </span>
                   </div>
                 </div>
@@ -774,8 +803,8 @@ const ServiceList = () => {
                   animate="show"
                 >
                   {/* 3-column grid with no gaps */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0">
-                    {filteredRecommendedServices.map((service) => (
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${columns} gap-0`}>
+                    {getServicesToDisplay(filteredRecommendedServices).map((service) => (
                       <div key={`recommended-${service.serviceId}`} className="p-0">
                         <ServiceCard
                           service={service}
@@ -820,8 +849,8 @@ const ServiceList = () => {
                 animate="show"
               >
                 {/* 3-column grid with no gaps */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-0">
-                  {filteredAllServices.map((service) => (
+                <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${columns} gap-0`}>
+                  {getServicesToDisplay(filteredAllServices).map((service) => (
                     <div key={`all-${service.serviceId}`} className="p-0">
                       <ServiceCard
                         service={service}
@@ -843,7 +872,7 @@ const ServiceList = () => {
           <AnimatePresence>
             {showBookingPanel && (
               <motion.div
-                className="fixed top-0 right-0 bottom-0 w-full sm:w-[350px] bg-white shadow-xl z-40 overflow-y-auto"
+                className="fixed top-0 right-0 bottom-0 w-full sm:w-[350px] z-40 overflow-y-auto"
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
@@ -887,4 +916,3 @@ const ServiceList = () => {
 }
 
 export default ServiceList
-

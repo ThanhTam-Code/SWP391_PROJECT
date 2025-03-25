@@ -1,12 +1,12 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { AlertCircle } from "lucide-react"
+import { CheckCircle, AlertCircle } from "lucide-react"
 
-const ErrorPopup = ({ message, onClose }) => {
+const NotificationPopup = ({ message, isSuccess, onClose }) => {
   return (
     <motion.div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[10000]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -18,7 +18,11 @@ const ErrorPopup = ({ message, onClose }) => {
         exit={{ scale: 0.9, opacity: 0 }}
       >
         <div className="flex flex-col items-center">
-          <AlertCircle className="w-12 h-12 text-red-600 mb-4" />
+          {isSuccess ? (
+            <CheckCircle className="w-12 h-12 text-green-600 mb-4" />
+          ) : (
+            <AlertCircle className="w-12 h-12 text-red-600 mb-4" />
+          )}
           <p className="text-lg font-medium text-gray-800 mb-6 text-center">{message}</p>
           <motion.button
             onClick={onClose}
@@ -34,5 +38,5 @@ const ErrorPopup = ({ message, onClose }) => {
   )
 }
 
-export default ErrorPopup
+export default NotificationPopup
 

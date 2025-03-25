@@ -1,16 +1,15 @@
-import { motion } from "framer-motion";
-import { Calendar, Clock, CheckCircle } from "lucide-react";
+"use client"
 
-const ConfirmedBooking = ({ confirmedBooking }) => {
+import { motion } from "framer-motion"
+import { Calendar, Clock, CheckCircle } from "lucide-react"
+import { formatDate, formatTime, formatVND } from "../MybookingComponents/utils"
+
+const BookingConfirmation = ({ booking }) => {
   const slideUp = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
     exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
-  };
-
-  const formatVND = (price) => price.toLocaleString("vi-VN") + " ₫";
-
-  if (!confirmedBooking) return null;
+  }
 
   return (
     <motion.div className="mb-8" variants={slideUp} initial="initial" animate="animate" exit="exit">
@@ -29,24 +28,18 @@ const ConfirmedBooking = ({ confirmedBooking }) => {
             <Calendar className="w-5 h-5 text-gray-500 mr-2 mt-0.5" />
             <div>
               <p className="text-sm text-gray-500">Booking Date</p>
-              <p className="font-medium text-gray-800">
-                {new Date(confirmedBooking.bookingDate).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
+              <p className="font-medium text-gray-800">{formatDate(booking.bookingDate)}</p>
             </div>
           </div>
           <div className="flex items-start mb-2">
             <Clock className="w-5 h-5 text-gray-500 mr-2 mt-0.5" />
             <div>
               <p className="text-sm text-gray-500">Start Time</p>
-              <p className="font-medium text-gray-800">{confirmedBooking.startTime}</p>
+              <p className="font-medium text-gray-800">{formatTime(booking.startTime)}</p>
             </div>
           </div>
           <ul className="divide-y divide-green-100">
-            {confirmedBooking.services.map((service, idx) => (
+            {booking.services.map((service, idx) => (
               <motion.li
                 key={service.serviceId}
                 className="py-3 flex justify-between"
@@ -64,14 +57,13 @@ const ConfirmedBooking = ({ confirmedBooking }) => {
           </ul>
           <div className="mt-3 pt-3 border-t border-green-100 flex justify-between">
             <p className="font-medium text-gray-800">Total</p>
-            <p className="font-semibold text-green-600">
-              {formatVND(confirmedBooking.totalPrice)}
-            </p>
+            <p className="font-semibold text-green-600">{formatVND(booking.totalPrice)}</p>
           </div>
         </motion.div>
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default ConfirmedBooking;
+export default BookingConfirmation
+

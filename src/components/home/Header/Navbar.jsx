@@ -72,7 +72,7 @@ const Navbar = () => {
   const [googleTranslateReady, setGoogleTranslateReady] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
   const baseUrl =
-    "https://beautya-gr2-production.up.railway.app";
+    "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app";
 
   const handleBlogPage = () => {
     navigate(`/blog`);

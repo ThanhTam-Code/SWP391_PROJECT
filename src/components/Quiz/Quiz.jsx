@@ -22,7 +22,7 @@ const Quiz = () => {
           throw new Error("Please login before doing quiz!");
         }
 
-        const response = await axios.get("https://beautya-gr2-production.up.railway.app/api/quiz/questions", {
+        const response = await axios.get("https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/quiz/questions", {
           headers: {
             Authorization: `Bearer ${token}`,
             "ngrok-skip-browser-warning": "true",
@@ -72,7 +72,7 @@ const Quiz = () => {
         setError(error.response.data.message || "Failed to load quiz questions.");
       }
     } else if (error.request) {
-      setError("Unable to connect to server. Please try again.");
+      setError("Please login before take a quiz!");
     } else {
       setError(error.message || "Failed to load quiz questions.");
     }
@@ -109,7 +109,7 @@ const Quiz = () => {
       });
 
       const response = await axios.post(
-        "https://beautya-gr2-production.up.railway.app/api/quiz/submit",
+        "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/quiz/submit",
         submissionData,
         {
           headers: {
