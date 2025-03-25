@@ -18,7 +18,7 @@ export default function FeedbackList({ filter, onLoadingChange }) {
   const fetchClients = async () => {
     try {
       const response = await fetch(
-        "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/users",
+        "https://beautya-gr2-production.up.railway.app/api/users",
         {
           headers: {
             "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export default function FeedbackList({ filter, onLoadingChange }) {
         };
 
         const feedbackResponse = await axios.get(
-          "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/feedbacks",
+          "https://beautya-gr2-production.up.railway.app/api/feedbacks",
           { headers }
         );
 

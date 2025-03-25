@@ -11,7 +11,7 @@ import EditServiceModal from "../../../components/Admin/ServiceAdmin/EditService
 import { motion } from "framer-motion";
 
 const BASE_URL =
-  "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/services";
+  "https://beautya-gr2-production.up.railway.app/api/services";
 
 const ServicesAdmin = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

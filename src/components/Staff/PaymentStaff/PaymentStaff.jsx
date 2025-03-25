@@ -23,9 +23,9 @@ const parseBookingDate = (dateString) => {
 
 // Updated API URL to fetch all bookings (not just confirmed)
 const BOOKING_API_URL =
-  "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/bookings/confirmed";
+  "https://beautya-gr2-production.up.railway.app/api/bookings/confirmed";
 const CASH_PAYMENT_API_URL =
-  "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/v1/vnpay/cash-payment";
+  "https://beautya-gr2-production.up.railway.app/api/v1/vnpay/cash-payment";
 
 export default function BookingStaff() {
   const [bookings, setBookings] = useState([]);

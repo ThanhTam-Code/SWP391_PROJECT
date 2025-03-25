@@ -56,7 +56,7 @@ const BookingForm = ({
 
       if (specialistId) {
         const response = await axios.get(
-          `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/schedules/${specialistId}/busy`,
+          `https://beautya-gr2-production.up.railway.app/api/schedules/${specialistId}/busy`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ const BookingForm = ({
         for (const specialist of specialists) {
           try {
             const response = await axios.get(
-              `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/schedules/${specialist.userId}/busy`,
+              `https://beautya-gr2-production.up.railway.app/api/schedules/${specialist.userId}/busy`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -257,7 +257,7 @@ const BookingForm = ({
 
     try {
       const response = await axios.post(
-        "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/bookings",
+        "https://beautya-gr2-production.up.railway.app/api/bookings",
         bookingData,
         {
           headers: {

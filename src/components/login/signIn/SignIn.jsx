@@ -15,7 +15,7 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
 
   const BACKEND_URL =
-    "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app";
+    "https://beautya-gr2-production.up.railway.app";
 
   useEffect(() => {
     console.log("Location search:", location.search); // Debug URL

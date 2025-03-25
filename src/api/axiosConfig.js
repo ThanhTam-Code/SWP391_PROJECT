@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL:
-    "https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api",
+    "https://beautya-gr2-production.up.railway.app/api",
 
   timeout: 10000,
   headers: {

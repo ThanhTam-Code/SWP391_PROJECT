@@ -24,13 +24,13 @@ export function StaffSchedule() {
       try {
         const [schedulesResponse, servicesResponse] = await Promise.all([
           axios.get(
-            `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/schedules/busy`,
+            `https://beautya-gr2-production.up.railway.app/api/schedules/busy`,
             {
               headers: { "ngrok-skip-browser-warning": "true" },
             }
           ),
           axios.get(
-            `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/services`,
+            `https://beautya-gr2-production.up.railway.app/api/services`,
             {
               headers: { "ngrok-skip-browser-warning": "true" },
             }
@@ -134,7 +134,7 @@ export function StaffSchedule() {
 
     try {
       const response = await axios.post(
-        `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/bookings/guest`,
+        `https://beautya-gr2-production.up.railway.app/api/bookings/guest`,
         bookingRequest,
         { headers: { "ngrok-skip-browser-warning": "true" } }
       );

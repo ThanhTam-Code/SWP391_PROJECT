@@ -66,7 +66,7 @@ const BookingList = ({
       setIsCancelling((prev) => ({ ...prev, [bookingId]: true }))
 
       const response = await fetch(
-        `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/bookings/${bookingId}/cancel`,
+        `https://beautya-gr2-production.up.railway.app/api/bookings/${bookingId}/cancel`,
         {
           method: "POST",
           headers: {
@@ -101,7 +101,7 @@ const BookingList = ({
       }
 
       const response = await fetch(
-        `https://f5c7-2405-4802-80d1-e410-e812-4aaa-796e-c02c.ngrok-free.app/api/bookings/${booking.bookingId}`,
+        `https://beautya-gr2-production.up.railway.app/api/bookings/${booking.bookingId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -113,7 +113,6 @@ const BookingList = ({
 
       if (response.ok) {
         const details = await response.json()
-        // Process the booking details
         const processedDetails = {
           ...booking,
           services: details.serviceNames
@@ -138,9 +137,7 @@ const BookingList = ({
           },
         }
 
-        // Set the selected booking and booking details
         onViewDetails(processedDetails)
-        // Set isPopupOpen to true in the parent component
         setIsPopupOpen(true)
       } else {
         const errorData = await response.json()
@@ -153,7 +150,10 @@ const BookingList = ({
   }
 
   const handleOpenFeedback = (booking) => {
-    // Directly open the feedback modal without showing details
+    if (!booking || !booking.bookingId) {
+      setErrorPopup("Invalid booking selected for feedback.")
+      return
+    }
     onOpenFeedback(booking)
   }
 
@@ -256,6 +256,11 @@ const BookingList = ({
                       >
                         {booking.status}
                       </span>
+                      {booking.status === "COMPLETED" && feedbackStatus && !feedbackStatus[booking.bookingId] && (
+                        <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-700">
+                          <MessageSquare className="w-3 h-3 mr-1" /> Pending Feedback
+                        </span>
+                      )}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-3">
@@ -339,21 +344,27 @@ const BookingList = ({
                       className="w-full flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      aria-label={`View details for booking ${displayNumber}`}
                     >
                       <Eye className="w-4 h-4 mr-2" /> View Details
                     </motion.button>
-                    {booking.status === "COMPLETED" &&
-                      feedbackStatus &&
-                      feedbackStatus[booking.bookingId] === false && (
+                    {booking.status === "COMPLETED" && feedbackStatus && (
+                      feedbackStatus[booking.bookingId] ? (
+                        <div className="w-full flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">
+                          <MessageSquare className="w-4 h-4 mr-2" /> Feedback Submitted
+                        </div>
+                      ) : (
                         <motion.button
                           onClick={() => handleOpenFeedback(booking)}
                           className="w-full flex items-center justify-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
+                          aria-label={`Submit feedback for booking ${displayNumber}`}
                         >
                           <MessageSquare className="w-4 h-4 mr-2" /> Feedback
                         </motion.button>
-                      )}
+                      )
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -366,4 +377,3 @@ const BookingList = ({
 }
 
 export default BookingList
-
