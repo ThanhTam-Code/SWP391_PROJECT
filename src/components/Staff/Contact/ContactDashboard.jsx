@@ -75,6 +75,17 @@ export function ContactDashboard() {
       });
       return;
     }
+
+    const currentContact = contacts.find((c) => c.id === id);
+    if (currentContact.status === "CONTACTED") {
+      showToast({
+        title: "Status Change Denied",
+        message: "Cannot change status back to Pending once Contacted.",
+        type: "error",
+      });
+      return;
+    }
+
     try {
       const response = await axios.put(
         `https://beautya-gr2-production.up.railway.app/api/contact/${id}/status?status=${status}`,
@@ -95,9 +106,7 @@ export function ContactDashboard() {
       );
       showToast({
         title: "Status Updated",
-        message: `${
-          contacts.find((c) => c.id === id).fullName
-        }'s status changed to ${status}.`,
+        message: `${currentContact.fullName}'s status changed to ${status}.`,
         type: status === "CONTACTED" ? "success" : "info",
       });
     } catch (error) {
@@ -157,68 +166,57 @@ export function ContactDashboard() {
       <div className="space-y-4 p-4 sm:p-6">
         <div className="grid grid-cols-1 gap-4">
           <div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-500">ID</h3>
-            <p className="mt-1 text-sm sm:text-base text-gray-900">
+            <p className="text-sm sm:text-base text-gray-900">
+              <span className="font-medium text-gray-500">ID:</span>{" "}
               {contact.id}
             </p>
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-500">
-              Status
-            </h3>
-            <span
-              className={`mt-1 inline-flex px-2 py-1 text-xs sm:text-sm font-semibold rounded-full ${getStatusColor(
-                contact.status
-              )} border`}
-            >
-              {contact.status.charAt(0) + contact.status.slice(1).toLowerCase()}
-            </span>
+            <p className="text-sm sm:text-base text-gray-900">
+              <span className="font-medium text-gray-500">Status:</span>{" "}
+              <span
+                className={`inline-flex px-2 py-1 text-xs sm:text-sm font-semibold rounded-full ${getStatusColor(
+                  contact.status
+                )} border`}
+              >
+                {contact.status.charAt(0) +
+                  contact.status.slice(1).toLowerCase()}
+              </span>
+            </p>
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-500">
-              Full Name
-            </h3>
-            <p className="mt-1 text-sm sm:text-base text-gray-900">
+            <p className="text-sm sm:text-base text-gray-900">
+              <span className="font-medium text-gray-500">Full Name:</span>{" "}
               {contact.fullName}
             </p>
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-500">
-              Email
-            </h3>
-            <p className="mt-1 text-sm sm:text-base text-gray-900">
+            <p className="text-sm sm:text-base text-gray-900">
+              <span className="font-medium text-gray-500">Email:</span>{" "}
               {contact.email}
             </p>
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-500">
-              Phone Number
-            </h3>
-            <p className="mt-1 text-sm sm:text-base text-gray-900">
+            <p className="text-sm sm:text-base text-gray-900">
+              <span className="font-medium text-gray-500">Phone Number:</span>{" "}
               {contact.phoneNumber}
             </p>
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-500">
-              Created At
-            </h3>
-            <p className="mt-1 text-sm sm:text-base text-gray-900">
+            <p className="text-sm sm:text-base text-gray-900">
+              <span className="font-medium text-gray-500">Created At:</span>{" "}
               {formatDate(contact.createdAt)}
             </p>
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-500">
-              Updated At
-            </h3>
-            <p className="mt-1 text-sm sm:text-base text-gray-900">
+            <p className="text-sm sm:text-base text-gray-900">
+              <span className="font-medium text-gray-500">Updated At:</span>{" "}
               {formatDate(contact.updatedAt)}
             </p>
           </div>
           <div>
-            <h3 className="text-xs sm:text-sm font-medium text-gray-500">
-              Message
-            </h3>
-            <p className="mt-1 text-sm sm:text-base text-gray-900 whitespace-pre-wrap">
+            <p className="text-sm sm:text-base text-gray-900 whitespace-pre-wrap">
+              <span className="font-medium text-gray-500">Message:</span>{" "}
               {contact.message}
             </p>
           </div>
@@ -525,25 +523,36 @@ export function ContactDashboard() {
                     </div>
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setConfirmStatusChange({
-                          id: contact.id,
-                          newStatus:
-                            contact.status === "PENDING"
-                              ? "CONTACTED"
-                              : "PENDING",
-                          fullName: contact.fullName,
-                        });
-                      }}
-                      className={`px-2 sm:px-3 py-1 inline-flex text-xs sm:text-sm font-medium rounded-full ${getStatusColor(
-                        contact.status
-                      )} focus:outline-none focus:ring-2 focus:ring-[#3D021E] transition-colors`}
-                    >
-                      {contact.status.charAt(0) +
-                        contact.status.slice(1).toLowerCase()}
-                    </button>
+                    {contact.status === "CONTACTED" ? (
+                      <span
+                        className={`px-2 sm:px-3 py-1 inline-flex text-xs sm:text-sm font-medium rounded-full ${getStatusColor(
+                          contact.status
+                        )}`}
+                      >
+                        {contact.status.charAt(0) +
+                          contact.status.slice(1).toLowerCase()}
+                      </span>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmStatusChange({
+                            id: contact.id,
+                            newStatus:
+                              contact.status === "PENDING"
+                                ? "CONTACTED"
+                                : "PENDING",
+                            fullName: contact.fullName,
+                          });
+                        }}
+                        className={`px-2 sm:px-3 py-1 inline-flex text-xs sm:text-sm font-medium rounded-full ${getStatusColor(
+                          contact.status
+                        )} focus:outline-none focus:ring-2 focus:ring-[#3D021E] transition-colors`}
+                      >
+                        {contact.status.charAt(0) +
+                          contact.status.slice(1).toLowerCase()}
+                      </button>
+                    )}
                   </td>
                   <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
                     {formatDate(contact.createdAt)}
