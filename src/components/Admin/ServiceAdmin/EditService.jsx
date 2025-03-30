@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import PropTypes from "prop-types";
-import axios from "axios"; // Dùng axios trực tiếp
+import axios from "axios";
 
-const BASE_URL =
-  "https://beautya-gr2-production.up.railway.app/api/services"; // Base URL với ngrok
+const BASE_URL = "https://beautya-gr2-production.up.railway.app/api/services";
 
 const EditServiceModal = ({ service, onEditService, onClose }) => {
   const [formData, setFormData] = useState({
@@ -13,11 +12,11 @@ const EditServiceModal = ({ service, onEditService, onClose }) => {
     price: service.price,
     duration: service.duration.toString(),
     imageUrl: service.images?.[0]?.url || "",
-    recommendedSkinTypes: service.recommendedSkinTypes || [], // Thêm trường mới
+    recommendedSkinTypes: service.recommendedSkinTypes || [],
   });
   const [error, setError] = useState(null);
 
-  const skinTypeOptions = ["OILY", "COMBINATION", "DRY", "NORMAL", "SENSITIVE"]; // Các tùy chọn loại da
+  const skinTypeOptions = ["OILY", "COMBINATION", "DRY", "NORMAL", "SENSITIVE"];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -149,25 +148,19 @@ const EditServiceModal = ({ service, onEditService, onClose }) => {
               htmlFor="duration"
               className="mb-1 block text-sm font-medium text-gray-700"
             >
-              Duration
+              Duration (minutes)
             </label>
-            <div className="flex space-x-4">
-              {["30", "45", "60"].map((dur) => (
-                <label key={dur} className="flex items-center">
-                  <input
-                    type="radio"
-                    name="duration"
-                    value={dur}
-                    checked={formData.duration === dur}
-                    onChange={handleChange}
-                    className="mr-2 focus:ring-[#4A0404]"
-                  />
-                  <span className="text-sm text-gray-700">
-                    {dur === "60" ? "1 hour" : `${dur} min`}
-                  </span>
-                </label>
-              ))}
-            </div>
+            <input
+              type="number"
+              id="duration"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#4A0404] focus:outline-none focus:ring-1 focus:ring-[#4A0404]"
+              required
+              min="1"
+              step="1"
+            />
           </div>
 
           <div className="mb-4">
@@ -237,7 +230,7 @@ EditServiceModal.propTypes = {
     duration: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
       .isRequired,
     images: PropTypes.arrayOf(PropTypes.shape({ url: PropTypes.string })),
-    recommendedSkinTypes: PropTypes.arrayOf(PropTypes.string), // Thêm propTypes cho recommendedSkinTypes
+    recommendedSkinTypes: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   onEditService: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
