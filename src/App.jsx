@@ -48,7 +48,7 @@ function App() {
     "/admin/calendar",
     "/admin/customersmanagement",
     "/admin/staffsmanagement",
-    "/admin/skintherapisttmanagement",
+    "/admin/skintherapistmanagement",
     "/admin/paymentmanagement",
     "/admin/feedback",
     "/admin/questions",
@@ -101,7 +101,7 @@ function App() {
               element={<StaffsManagement />}
             />
             <Route
-              path="/admin/skintherapisttmanagement"
+              path="/admin/skintherapistmanagement"
               element={<SkinTherapistsManagement />}
             />
             <Route
