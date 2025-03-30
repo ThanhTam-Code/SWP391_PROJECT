@@ -5,8 +5,7 @@ import PropTypes from "prop-types";
 import { X } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 
-const API_URL =
-  "https://beautya-gr2-production.up.railway.app/api/users";
+const API_URL = "https://beautya-gr2-production.up.railway.app/api/users";
 
 export function EditClientModal({ isOpen, onClose, client, onSave }) {
   const [formData, setFormData] = useState(null);
