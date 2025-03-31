@@ -291,11 +291,7 @@ export const SpecialistDetail = ({ specialist, onClose }) => {
                 </div>
               </div>
 
-              <div className="mt-8">
-                <button className="w-full bg-pink-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-pink-700 transition-colors">
-                  Book Appointment
-                </button>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -317,7 +313,7 @@ const SpecialistPage = () => {
     const fetchSpecialists = async () => {
       try {
         const response = await axios.get(
-          "https://beautya-gr2-production.up.railway.app/api/users/specialists/active",
+          "https://62dd-2402-800-78d0-a832-503e-9ecd-54a8-3bb0.ngrok-free.app/api/users/specialists/active",
           {
             headers: {
               "ngrok-skip-browser-warning": "true",

@@ -5,7 +5,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { XIcon } from "lucide-react";
 
-const BASE_URL = "https://beautya-gr2-production.up.railway.app/api/bookings";
+const BASE_URL = "https://62dd-2402-800-78d0-a832-503e-9ecd-54a8-3bb0.ngrok-free.app/api/bookings";
 
 export default function OrderlistAdmin() {
   const [orders, setOrders] = useState([]);

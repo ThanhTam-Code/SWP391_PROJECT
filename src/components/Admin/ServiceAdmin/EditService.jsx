@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import PropTypes from "prop-types";
 import axios from "axios";
 
-const BASE_URL = "https://beautya-gr2-production.up.railway.app/api/services";
+const BASE_URL = "https://62dd-2402-800-78d0-a832-503e-9ecd-54a8-3bb0.ngrok-free.app/api/services";
 
 const EditServiceModal = ({ service, onEditService, onClose }) => {
   const [formData, setFormData] = useState({

@@ -15,7 +15,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 
 const BASE_URL =
-  "https://beautya-gr2-production.up.railway.app/api/users/profile";
+  "https://62dd-2402-800-78d0-a832-503e-9ecd-54a8-3bb0.ngrok-free.app/api/users/profile";
 
 // Dữ liệu mặc định cho các trường không có trong API
 const defaultProfessionalInfo = {
